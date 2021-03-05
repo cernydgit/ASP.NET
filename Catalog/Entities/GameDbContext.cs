@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Catalog.Entities
@@ -12,12 +13,15 @@ namespace Catalog.Entities
         }
 
         public DbSet<Guild> Guilds { get; set; }
+        public DbSet<GuildsView> GuildsViews { get; set; }
         public DbSet<Player> Players { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Guild>().Property(b => b.Name).IsRequired();
             modelBuilder.Entity<Guild>().Property(b => b.Created).HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<GuildsView>().ToView("GuildsView").HasKey(g => g.GuildId);
         }
 
     }
@@ -29,6 +33,13 @@ namespace Catalog.Entities
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public DateTime Created { get; set; }
         public List<Player> Players { get; set; } = new List<Player>();
+    }
+
+    public class GuildsView
+    {
+        public int GuildId { get; set; }
+        public string Name { get; set; }
+        public int PlayerCount { get; set; }
     }
 
 

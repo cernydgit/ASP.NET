@@ -33,6 +33,15 @@ namespace Catalog.Tests
         }
 
         [Test]
+        public async Task LoadView()
+        {
+            var guilds = await GameDbContext.GuildsViews.AsNoTracking().ToListAsync();
+            Console.WriteLine(guilds.ToJson());
+            Assert.AreNotEqual(0, guilds.Count);
+        }
+
+
+        [Test]
         public async Task ComputedColumn()
         {
             var guilds = await GameDbContext.Guilds.Select(g => new { Guild = g, PlayerCount = g.Players.Count }).ToListAsync();
@@ -67,10 +76,8 @@ namespace Catalog.Tests
         }
 
 
-
-
         [Test]
-        public async Task UpdateGuilds()
+        public async Task Update()
         {
             var g = await GameDbContext.Guilds.OrderBy(g => g.GuildId).FirstAsync();
             g.Name = "AAA";
@@ -81,7 +88,7 @@ namespace Catalog.Tests
         {
             for (int i = 0; i < count; i++)
             {
-                var g1 = new Guild { Name = "Guild_" + i};
+                var g1 = new Guild { Name = "Guild_" + i };
                 g1.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
                 g1.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
                 g1.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
@@ -92,7 +99,9 @@ namespace Catalog.Tests
         private void RecreateDatabase()
         {
             GameDbContext.Database.EnsureDeleted();
-            GameDbContext.Database.EnsureCreated();
+            //GameDbContext.Database.EnsureCreated();
+            GameDbContext.Database.Migrate();
+            Console.WriteLine("Applied migrations:\n " + string.Join(",\n", GameDbContext.Database.GetAppliedMigrations()));
         }
 
         private async Task InitDatabase(int guildCount = 3)

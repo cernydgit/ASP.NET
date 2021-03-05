@@ -14,3 +14,15 @@ WeatherAuth/obj/
 WeatherIdentity/obj/
 
 WeatherNoAuth/obj/
+
+Catalog.Tests/bin/
+
+Catalog/bin/
+
+.vs/
+
+WeatherAuth/bin/
+
+WeatherIdentity/bin/
+
+WeatherNoAuth/bin/
