@@ -1,0 +1,26 @@
+version: '3.4'
+services:
+
+    mongo:
+        image: mongo
+        #restart: always
+        volumes:  
+            - mongoloid:/data/db 
+        ports:
+          - 27017:27017
+
+    app:
+        build: 
+            context: ..
+            dockerfile: ./Catalog/dockerfile
+        #image: catalog
+        restart: always
+        ports:
+            - 1000:80
+        environment:
+            - MongoSettings:Host=mongo
+        depends_on:
+            - mongo
+
+volumes:
+    mongoloid:

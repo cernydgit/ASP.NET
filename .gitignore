@@ -1,0 +1,16 @@
+
+Catalog/Logs/
+
+.vs/ASP.NET/v16/.suo
+
+.vs/ASP.NET/DesignTimeBuild/
+
+Catalog/obj/
+
+Catalog.Tests/obj/
+
+WeatherAuth/obj/
+
+WeatherIdentity/obj/
+
+WeatherNoAuth/obj/

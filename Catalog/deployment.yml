@@ -1,0 +1,23 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+  labels:
+    app: catalog
+spec:
+  replicas: 2
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+      - name: catalog
+        image: docker.io/cernydocker/catalog:v7
