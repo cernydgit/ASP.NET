@@ -118,7 +118,7 @@ namespace Catalog.Tests
             for (int i = 0; i < guildCount; i++)
             {
                 Player admin;
-                var guild = new Guild { Name = "Guild_" + i };
+                var guild = new MultiGuild { Name = "Guild_" + i };
 
                 // guild x players
                 guild.Players.Add(admin = new Player());

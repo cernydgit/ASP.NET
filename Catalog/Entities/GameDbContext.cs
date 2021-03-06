@@ -11,16 +11,20 @@ namespace Catalog.Entities
         }
 
         public DbSet<Guild> Guilds { get; set; }
+        public DbSet<MultiGuild> MultiGuilds { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<MultiPlayer> MultiPlayers { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Guild>().ToTable("Guilds");
             modelBuilder.Entity<Guild>().Property(b => b.Name).IsRequired();
             modelBuilder.Entity<Guild>().Property(b => b.Created).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Guild>().HasOne(g => g.Admin).WithOne().HasForeignKey<Guild>(g => g.AdminPlayerId);
             modelBuilder.Entity<Guild>().HasMany(g => g.Players).WithOne(p => p.Guild);
+
+            modelBuilder.Entity<MultiGuild>().ToTable("MultiGuilds");
         }
 
     }
@@ -38,6 +42,12 @@ namespace Catalog.Entities
         public int?   AdminPlayerId { get; set; }
         public Player Admin { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
+    }
+
+
+    public class MultiGuild : Guild
+    {
+        public int MMR { get; set; }
     }
 
     public class Player : NamedEntity
