@@ -97,13 +97,28 @@ namespace Catalog.Tests
         {
             RecreateDatabase();
 
+
+            // tags
+            for (int i = 0; i < 3; i++)
+            {
+                GameDbContext.Tags.Add(new Tag());
+            }
+            await GameDbContext.SaveChangesAsync();
+
+            // guilds
             for (int i = 0; i < guildCount; i++)
             {
                 Player admin;
                 var guild = new Guild { Name = "Guild_" + i };
+
+                // guild x players
                 guild.Players.Add(admin = new Player { Name = Guid.NewGuid().ToString() });
                 guild.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
                 guild.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
+
+                // guild x tags
+                guild.Tags.AddRange(GameDbContext.Tags);
+
                 GameDbContext.Guilds.Add(guild);
                 await GameDbContext.SaveChangesAsync();
                 guild.Admin = admin;

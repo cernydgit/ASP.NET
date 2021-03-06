@@ -67,6 +67,36 @@ namespace Catalog.Migrations
                     b.ToTable("Players");
                 });
 
+            modelBuilder.Entity("Catalog.Entities.Tag", b =>
+                {
+                    b.Property<int>("TagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TagId");
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("GuildTag", b =>
+                {
+                    b.Property<int>("GuildsGuildId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsTagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GuildsGuildId", "TagsTagId");
+
+                    b.HasIndex("TagsTagId");
+
+                    b.ToTable("GuildTag");
+                });
+
             modelBuilder.Entity("Catalog.Entities.Guild", b =>
                 {
                     b.HasOne("Catalog.Entities.Player", "Admin")
@@ -83,6 +113,21 @@ namespace Catalog.Migrations
                         .HasForeignKey("GuildId");
 
                     b.Navigation("Guild");
+                });
+
+            modelBuilder.Entity("GuildTag", b =>
+                {
+                    b.HasOne("Catalog.Entities.Guild", null)
+                        .WithMany()
+                        .HasForeignKey("GuildsGuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Catalog.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Catalog.Entities.Guild", b =>
