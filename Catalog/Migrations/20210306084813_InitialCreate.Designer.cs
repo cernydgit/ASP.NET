@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Catalog.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20210303153401_M1")]
-    partial class M1
+    [Migration("20210306084813_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace Catalog.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("AdminPlayerId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -38,6 +41,10 @@ namespace Catalog.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GuildId");
+
+                    b.HasIndex("AdminPlayerId")
+                        .IsUnique()
+                        .HasFilter("[AdminPlayerId] IS NOT NULL");
 
                     b.ToTable("Guilds");
                 });
@@ -60,6 +67,15 @@ namespace Catalog.Migrations
                     b.HasIndex("GuildId");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("Catalog.Entities.Guild", b =>
+                {
+                    b.HasOne("Catalog.Entities.Player", "Admin")
+                        .WithOne()
+                        .HasForeignKey("Catalog.Entities.Guild", "AdminPlayerId");
+
+                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("Catalog.Entities.Player", b =>

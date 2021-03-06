@@ -33,15 +33,6 @@ namespace Catalog.Tests
         }
 
         [Test]
-        public async Task LoadView()
-        {
-            var guilds = await GameDbContext.GuildsViews.AsNoTracking().ToListAsync();
-            Console.WriteLine(guilds.ToJson());
-            Assert.AreNotEqual(0, guilds.Count);
-        }
-
-
-        [Test]
         public async Task ComputedColumn()
         {
             var guilds = await GameDbContext.Guilds.Select(g => new { Guild = g, PlayerCount = g.Players.Count }).ToListAsync();
@@ -84,16 +75,14 @@ namespace Catalog.Tests
             await GameDbContext.SaveChangesAsync();
         }
 
-        private void CreateGuilds(int count)
+        [Test]
+        public async Task Delete()
         {
-            for (int i = 0; i < count; i++)
-            {
-                var g1 = new Guild { Name = "Guild_" + i };
-                g1.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
-                g1.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
-                g1.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
-                GameDbContext.Guilds.Add(g1);
-            }
+            var guilds = await GameDbContext.Guilds.ToListAsync();
+            guilds.ForEach(g => GameDbContext.Guilds.Remove(g));
+            await GameDbContext.SaveChangesAsync();
+            var p = await GameDbContext.Players.FirstAsync();
+            Assert.IsNull(p.GuildId);
         }
 
         private void RecreateDatabase()
@@ -107,7 +96,20 @@ namespace Catalog.Tests
         private async Task InitDatabase(int guildCount = 3)
         {
             RecreateDatabase();
-            CreateGuilds(guildCount);
+
+            for (int i = 0; i < guildCount; i++)
+            {
+                Player admin;
+                var guild = new Guild { Name = "Guild_" + i };
+                guild.Players.Add(admin = new Player { Name = Guid.NewGuid().ToString() });
+                guild.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
+                guild.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
+                GameDbContext.Guilds.Add(guild);
+                await GameDbContext.SaveChangesAsync();
+                guild.Admin = admin;
+                await GameDbContext.SaveChangesAsync();
+            }
+
             await GameDbContext.SaveChangesAsync();
         }
     }
