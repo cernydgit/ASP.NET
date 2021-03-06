@@ -59,6 +59,15 @@ namespace Catalog.Tests
         }
 
         [Test]
+        public async Task LoadDerived()
+        {
+            var mp = await GameDbContext.MultiPlayers.ToListAsync();
+            Console.WriteLine(mp.ToJson());
+            Assert.AreNotEqual(0, mp.Count);
+        }
+
+
+        [Test]
         public async Task LoadIncludeAsSplit()
         {
             var guilds = await GameDbContext.Guilds.Include(g => g.Players).AsSplitQuery().ToListAsync();
@@ -112,9 +121,9 @@ namespace Catalog.Tests
                 var guild = new Guild { Name = "Guild_" + i };
 
                 // guild x players
-                guild.Players.Add(admin = new Player { Name = Guid.NewGuid().ToString() });
-                guild.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
-                guild.Players.Add(new Player { Name = Guid.NewGuid().ToString() });
+                guild.Players.Add(admin = new Player());
+                guild.Players.Add(new Player());
+                guild.Players.Add(new MultiPlayer { MMR = 666});
 
                 // guild x tags
                 guild.Tags.AddRange(GameDbContext.Tags);

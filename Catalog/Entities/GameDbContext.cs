@@ -12,6 +12,7 @@ namespace Catalog.Entities
 
         public DbSet<Guild> Guilds { get; set; }
         public DbSet<Player> Players { get; set; }
+        public DbSet<MultiPlayer> MultiPlayers { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,6 +47,11 @@ namespace Catalog.Entities
 
         [System.Text.Json.Serialization.JsonIgnore] [Newtonsoft.Json.JsonIgnore]
         public Guild Guild { get; set; }
+    }
+
+    public class MultiPlayer : Player
+    {
+        public int MMR { get; set; }
     }
 
     public class Tag : NamedEntity
