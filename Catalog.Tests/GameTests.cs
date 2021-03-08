@@ -58,7 +58,7 @@ namespace Catalog.Tests
         [Test]
         public async Task LoadInclude()
         {
-            var guilds = await GameDbContext.Guilds.Include(g => g.Players).ToListAsync();
+            var guilds = await GameDbContext.Guilds.Include(g => g.Players).TagWith(nameof(LoadInclude)).ToListAsync();
             Console.WriteLine(guilds.ToJson());
             Assert.AreNotEqual(0, guilds[0].Players.Count);
         }
