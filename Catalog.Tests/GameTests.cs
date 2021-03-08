@@ -140,7 +140,7 @@ namespace Catalog.Tests
 
 
         [Test]
-        public async Task UpdateConcurrency()
+        public void UpdateConcurrency()
         {
             Assert.ThrowsAsync<DbUpdateConcurrencyException>(async () =>
             {
