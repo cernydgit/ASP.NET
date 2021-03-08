@@ -16,7 +16,6 @@ namespace Catalog.Entities
         public DbSet<Player> Players { get; set; }
         public DbSet<MultiPlayer> MultiPlayers { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<GuildDetails> GuildDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

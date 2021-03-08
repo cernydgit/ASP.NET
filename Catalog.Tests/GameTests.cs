@@ -80,33 +80,33 @@ namespace Catalog.Tests
             Assert.AreNotEqual(0, guilds[0].Players.Count);
         }
 
-        [Test]
-        public async Task LoadGuildDetailsBySet()
-        {
-            var g = await GameDbContext.GuildDetails.FirstAsync(g => g.GuildId == 1);
-            Console.WriteLine(g.ToJson());
-            Assert.AreNotEqual(0, g.PlayerCount);
-        }
+        //[Test]
+        //public async Task LoadGuildDetailsBySet()
+        //{
+        //    var g = await GameDbContext.GuildDetails.FirstAsync(g => g.GuildId == 1);
+        //    Console.WriteLine(g.ToJson());
+        //    Assert.AreNotEqual(0, g.PlayerCount);
+        //}
 
-        [Test]
-        [Ignore("Navigation to entity defined by query doesn't work")]
-        public async Task LoadGuildDetailsByInclude()
-        {
-            //var d = await GameDbContext.GuildDetails.Include(g => g.Guild).ToListAsync();
-            var d = await GameDbContext.GuildDetails.ToListAsync();
-            var g = await GameDbContext.Guilds.Include(g => g.GuildDetails).FirstAsync();// g => g.GuildId == 1);
-            Console.WriteLine(g.ToJson());
-            Assert.AreNotEqual(0, g.GuildDetails.PlayerCount);
-        }
+        //[Test]
+        //[Ignore("Navigation to entity defined by query doesn't work")]
+        //public async Task LoadGuildDetailsByInclude()
+        //{
+        //    //var d = await GameDbContext.GuildDetails.Include(g => g.Guild).ToListAsync();
+        //    var d = await GameDbContext.GuildDetails.ToListAsync();
+        //    var g = await GameDbContext.Guilds.Include(g => g.GuildDetails).FirstAsync();// g => g.GuildId == 1);
+        //    Console.WriteLine(g.ToJson());
+        //    Assert.AreNotEqual(0, g.GuildDetails.PlayerCount);
+        //}
 
 
-        [Test]
-        public async Task LoadGuildDetailsByQyeryJoin()
-        {
-            var g = await GameDbContext.Guilds.Join(GameDbContext.GuildDetails, g => g.GuildId, d => d.GuildId, (g, d) => new { Guild = g, GuildDetail = d }).FirstAsync();
-            Console.WriteLine(g.ToJson());
-            Assert.AreNotEqual(0, g.GuildDetail.PlayerCount);
-        }
+        //[Test]
+        //public async Task LoadGuildDetailsByQyeryJoin()
+        //{
+        //    var g = await GameDbContext.Guilds.Join(GameDbContext.GuildDetails, g => g.GuildId, d => d.GuildId, (g, d) => new { Guild = g, GuildDetail = d }).FirstAsync();
+        //    Console.WriteLine(g.ToJson());
+        //    Assert.AreNotEqual(0, g.GuildDetail.PlayerCount);
+        //}
 
 
 
