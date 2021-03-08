@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Catalog.Entities
 {
@@ -15,7 +16,7 @@ namespace Catalog.Entities
         public DbSet<Player> Players { get; set; }
         public DbSet<MultiPlayer> MultiPlayers { get; set; }
         public DbSet<Tag> Tags { get; set; }
-
+         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Guild>().ToTable("Guilds");
@@ -27,11 +28,23 @@ namespace Catalog.Entities
             modelBuilder.Entity<MultiGuild>().ToTable("MultiGuilds");
         }
 
+        public IQueryable<GuildDetails> GetGuildDetails()
+        {
+            return Guilds.Include(g => g.Players).Select(g => new GuildDetails { GuildId = g.GuildId, PlayerCount = g.Players.Count() });
+        }
+
     }
 
     public class NamedEntity
     {
         public string Name { get; set; } = Guid.NewGuid().ToString();
+    }
+
+
+    public class GuildDetails
+    {
+        public int GuildId { get; set; }
+        public int PlayerCount { get; set; }
     }
 
     public class Guild : NamedEntity

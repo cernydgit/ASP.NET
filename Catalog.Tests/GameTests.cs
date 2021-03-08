@@ -75,6 +75,15 @@ namespace Catalog.Tests
             Assert.AreNotEqual(0, guilds[0].Players.Count);
         }
 
+        [Test]
+        public async Task LoadGuildDetails()
+        {
+            var g = await GameDbContext.GetGuildDetails().FirstAsync(g => g.GuildId == 1);
+            Console.WriteLine(g.ToJson());
+            Assert.AreNotEqual(0, g.PlayerCount);
+        }
+
+
 
         [Test]
         public async Task Update()
