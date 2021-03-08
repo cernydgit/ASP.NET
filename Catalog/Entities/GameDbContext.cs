@@ -16,7 +16,8 @@ namespace Catalog.Entities
         public DbSet<Player> Players { get; set; }
         public DbSet<MultiPlayer> MultiPlayers { get; set; }
         public DbSet<Tag> Tags { get; set; }
-         
+        public DbSet<GuildDetails> GuildDetails { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Guild>().ToTable("Guilds");
@@ -27,6 +28,14 @@ namespace Catalog.Entities
             modelBuilder.Entity<Guild>().HasMany(g => g.Players).WithOne(p => p.Guild);
 
             modelBuilder.Entity<MultiGuild>().ToTable("MultiGuilds");
+
+            //
+            modelBuilder.Entity<GuildDetails>().ToQuery(() => Guilds.Include(g => g.Players).Select(g => new GuildDetails { GuildId = g.GuildId, PlayerCount = g.Players.Count() }));
+            //modelBuilder.Entity<GuildDetails>().Property(d => d.GuildId).IsRequired();
+            modelBuilder.Entity<GuildDetails>().HasKey(d => d.GuildId);
+            // navigation doesn't work
+            modelBuilder.Entity<Guild>().HasOne(g => g.GuildDetails).WithOne(g => g.Guild).HasPrincipalKey<Guild>(g => g.GuildId).HasForeignKey<GuildDetails>(g => g.GuildId);
+            //modelBuilder.Entity<GuildDetails>().HasOne(g => g.Guild).WithOne(g => g.GuildDetails).HasPrincipalKey<GuildDetails>(g => g.GuildId).HasForeignKey<Guild>(g => g.GuildId);
         }
 
         public IQueryable<GuildDetails> GetGuildDetailsByJoin()
@@ -38,8 +47,6 @@ namespace Catalog.Entities
         {
             return Players.GroupBy(p => p.GuildId).Select(g => new GuildDetails { GuildId = g.Key.GetValueOrDefault(), PlayerCount = g.Count() });
         }
-
-
     }
 
     public class NamedEntity
@@ -50,8 +57,9 @@ namespace Catalog.Entities
 
     public class GuildDetails
     {
-        public int GuildId { get; set; }
+        public int? GuildId { get; set; }
         public int PlayerCount { get; set; }
+        public Guild Guild { get; set; }
     }
 
     public class Guild : NamedEntity
@@ -62,8 +70,9 @@ namespace Catalog.Entities
         public int?   AdminPlayerId { get; set; }
         public Player Admin { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
-
         public byte[] Timestamp { get; set; }
+
+        public GuildDetails GuildDetails { get; set; }
     }
 
 
