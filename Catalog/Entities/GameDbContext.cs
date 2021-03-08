@@ -29,11 +29,11 @@ namespace Catalog.Entities
             modelBuilder.Entity<MultiGuild>().ToTable("MultiGuilds");
 
             //
-            modelBuilder.Entity<GuildDetails>().ToQuery(() => Guilds.Include(g => g.Players).Select(g => new GuildDetails { GuildId = g.GuildId, PlayerCount = g.Players.Count() }));
+            //modelBuilder.Entity<GuildDetails>().ToQuery(() => Guilds.Include(g => g.Players).Select(g => new GuildDetails { GuildId = g.GuildId, PlayerCount = g.Players.Count() }));
             //modelBuilder.Entity<GuildDetails>().Property(d => d.GuildId).IsRequired();
-            modelBuilder.Entity<GuildDetails>().HasKey(d => d.GuildId);
+            //modelBuilder.Entity<GuildDetails>().HasKey(d => d.GuildId);
             // navigation doesn't work
-            modelBuilder.Entity<Guild>().HasOne(g => g.GuildDetails).WithOne(g => g.Guild).HasPrincipalKey<Guild>(g => g.GuildId).HasForeignKey<GuildDetails>(g => g.GuildId);
+            //modelBuilder.Entity<Guild>().HasOne(g => g.GuildDetails).WithOne(g => g.Guild).HasPrincipalKey<Guild>(g => g.GuildId).HasForeignKey<GuildDetails>(g => g.GuildId);
             //modelBuilder.Entity<GuildDetails>().HasOne(g => g.Guild).WithOne(g => g.GuildDetails).HasPrincipalKey<GuildDetails>(g => g.GuildId).HasForeignKey<Guild>(g => g.GuildId);
         }
 
@@ -58,7 +58,6 @@ namespace Catalog.Entities
     {
         public int? GuildId { get; set; }
         public int PlayerCount { get; set; }
-        public Guild Guild { get; set; }
     }
 
     public class Guild : NamedEntity
@@ -70,8 +69,6 @@ namespace Catalog.Entities
         public Player Admin { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public byte[] Timestamp { get; set; }
-
-        public GuildDetails GuildDetails { get; set; }
     }
 
 

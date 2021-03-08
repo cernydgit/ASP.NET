@@ -52,17 +52,6 @@ namespace Catalog.Migrations
                     b.ToTable("Guilds");
                 });
 
-            modelBuilder.Entity("Catalog.Entities.GuildDetails", b =>
-                {
-                    b.Property<int?>("GuildId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PlayerCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("GuildId");
-                });
-
             modelBuilder.Entity("Catalog.Entities.Player", b =>
                 {
                     b.Property<int>("PlayerId")
@@ -148,17 +137,6 @@ namespace Catalog.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("Catalog.Entities.GuildDetails", b =>
-                {
-                    b.HasOne("Catalog.Entities.Guild", "Guild")
-                        .WithOne("GuildDetails")
-                        .HasForeignKey("Catalog.Entities.GuildDetails", "GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Guild");
-                });
-
             modelBuilder.Entity("Catalog.Entities.Player", b =>
                 {
                     b.HasOne("Catalog.Entities.Guild", "Guild")
@@ -194,8 +172,6 @@ namespace Catalog.Migrations
 
             modelBuilder.Entity("Catalog.Entities.Guild", b =>
                 {
-                    b.Navigation("GuildDetails");
-
                     b.Navigation("Players");
                 });
 #pragma warning restore 612, 618
