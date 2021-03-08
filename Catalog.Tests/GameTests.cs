@@ -76,12 +76,21 @@ namespace Catalog.Tests
         }
 
         [Test]
-        public async Task LoadGuildDetails()
+        public async Task LoadGuildDetailsByJoin()
         {
-            var g = await GameDbContext.GetGuildDetails().FirstAsync(g => g.GuildId == 1);
+            var g = await GameDbContext.GetGuildDetailsByJoin().FirstAsync(g => g.GuildId == 1);
             Console.WriteLine(g.ToJson());
             Assert.AreNotEqual(0, g.PlayerCount);
         }
+
+        [Test]
+        public async Task LoadGuildDetailsByGroup()
+        {
+            var g = await GameDbContext.GetGuildDetailsByGroup().FirstAsync(g => g.GuildId == 1);
+            Console.WriteLine(g.ToJson());
+            Assert.AreNotEqual(0, g.PlayerCount);
+        }
+
 
 
 

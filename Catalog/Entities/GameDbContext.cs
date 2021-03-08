@@ -22,16 +22,23 @@ namespace Catalog.Entities
             modelBuilder.Entity<Guild>().ToTable("Guilds");
             modelBuilder.Entity<Guild>().Property(b => b.Name).IsRequired();
             modelBuilder.Entity<Guild>().Property(b => b.Created).HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<Guild>().Property(b => b.Timestamp).IsRowVersion();
             modelBuilder.Entity<Guild>().HasOne(g => g.Admin).WithOne().HasForeignKey<Guild>(g => g.AdminPlayerId);
             modelBuilder.Entity<Guild>().HasMany(g => g.Players).WithOne(p => p.Guild);
 
             modelBuilder.Entity<MultiGuild>().ToTable("MultiGuilds");
         }
 
-        public IQueryable<GuildDetails> GetGuildDetails()
+        public IQueryable<GuildDetails> GetGuildDetailsByJoin()
         {
             return Guilds.Include(g => g.Players).Select(g => new GuildDetails { GuildId = g.GuildId, PlayerCount = g.Players.Count() });
         }
+
+        public IQueryable<GuildDetails> GetGuildDetailsByGroup()
+        {
+            return Players.GroupBy(p => p.GuildId).Select(g => new GuildDetails { GuildId = g.Key.GetValueOrDefault(), PlayerCount = g.Count() });
+        }
+
 
     }
 
@@ -55,6 +62,8 @@ namespace Catalog.Entities
         public int?   AdminPlayerId { get; set; }
         public Player Admin { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
+
+        public byte[] Timestamp { get; set; }
     }
 
 
