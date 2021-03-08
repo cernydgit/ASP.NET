@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Catalog.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20210306100042_MultiGuild")]
-    partial class MultiGuild
+    [Migration("20210308152733_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,6 +40,11 @@ namespace Catalog.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.HasKey("GuildId");
 
                     b.HasIndex("AdminPlayerId")
@@ -47,6 +52,17 @@ namespace Catalog.Migrations
                         .HasFilter("[AdminPlayerId] IS NOT NULL");
 
                     b.ToTable("Guilds");
+                });
+
+            modelBuilder.Entity("Catalog.Entities.GuildDetails", b =>
+                {
+                    b.Property<int?>("GuildId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlayerCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("GuildId");
                 });
 
             modelBuilder.Entity("Catalog.Entities.Player", b =>
@@ -134,6 +150,17 @@ namespace Catalog.Migrations
                     b.Navigation("Admin");
                 });
 
+            modelBuilder.Entity("Catalog.Entities.GuildDetails", b =>
+                {
+                    b.HasOne("Catalog.Entities.Guild", "Guild")
+                        .WithOne("GuildDetails")
+                        .HasForeignKey("Catalog.Entities.GuildDetails", "GuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Guild");
+                });
+
             modelBuilder.Entity("Catalog.Entities.Player", b =>
                 {
                     b.HasOne("Catalog.Entities.Guild", "Guild")
@@ -169,6 +196,8 @@ namespace Catalog.Migrations
 
             modelBuilder.Entity("Catalog.Entities.Guild", b =>
                 {
+                    b.Navigation("GuildDetails");
+
                     b.Navigation("Players");
                 });
 #pragma warning restore 612, 618

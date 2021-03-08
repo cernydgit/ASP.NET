@@ -39,12 +39,26 @@ namespace Catalog.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MultiGuilds",
+                columns: table => new
+                {
+                    GuildId = table.Column<int>(type: "int", nullable: false),
+                    MMR = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MultiGuilds", x => x.GuildId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
                     PlayerId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GuildId = table.Column<int>(type: "int", nullable: true),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MMR = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -60,6 +74,7 @@ namespace Catalog.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     AdminPlayerId = table.Column<int>(type: "int", nullable: true),
+                    Timestamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -99,6 +114,14 @@ namespace Catalog.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_MultiGuilds_Guilds_GuildId",
+                table: "MultiGuilds",
+                column: "GuildId",
+                principalTable: "Guilds",
+                principalColumn: "GuildId",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Players_Guilds_GuildId",
                 table: "Players",
                 column: "GuildId",
@@ -115,6 +138,9 @@ namespace Catalog.Migrations
 
             migrationBuilder.DropTable(
                 name: "GuildTag");
+
+            migrationBuilder.DropTable(
+                name: "MultiGuilds");
 
             migrationBuilder.DropTable(
                 name: "Tags");
