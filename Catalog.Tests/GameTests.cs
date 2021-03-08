@@ -20,8 +20,13 @@ namespace Catalog.Tests
         [SetUp]
         public async Task SetUp()
         {
-            GameDbContext = AppFactory.Services.CreateScope().ServiceProvider.GetService<GameDbContext>();
+            GameDbContext = CreateDbContext();
             await InitDatabase(3);
+        }
+
+        private GameDbContext CreateDbContext()
+        {
+            return AppFactory.Services.CreateScope().ServiceProvider.GetService<GameDbContext>();
         }
 
         [Test]
@@ -129,8 +134,29 @@ namespace Catalog.Tests
         {
             var g = await GameDbContext.Guilds.OrderBy(g => g.GuildId).FirstAsync();
             g.Name = "AAA";
+            g.Timestamp = new byte[5] { 1,2,3,4,5};
             await GameDbContext.SaveChangesAsync();
         }
+
+
+        [Test]
+        public async Task UpdateConcurrency()
+        {
+            Assert.ThrowsAsync<DbUpdateConcurrencyException>(async () =>
+            {
+
+                var db1 = GameDbContext;
+                var db2 = CreateDbContext();
+                var g1 = await db1.Guilds.OrderBy(g => g.GuildId).FirstAsync();
+                var g2 = await db2.Guilds.OrderBy(g => g.GuildId).FirstAsync();
+                g1.Name = "AAA";
+                await db1.SaveChangesAsync();
+
+                g2.Name = "BBB";
+                await db2.SaveChangesAsync();
+            });
+        }
+
 
         [Test]
         public async Task Delete()
