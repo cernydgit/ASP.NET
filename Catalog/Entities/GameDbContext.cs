@@ -23,7 +23,7 @@ namespace Catalog.Entities
             modelBuilder.Entity<Guild>().Property(b => b.Name).IsRequired();
             modelBuilder.Entity<Guild>().Property(b => b.Created).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Guild>().Property(b => b.Timestamp).IsRowVersion();
-            modelBuilder.Entity<Guild>().HasOne(g => g.Admin).WithOne().HasForeignKey<Guild>(g => g.AdminPlayerId).IsRequired(false);
+            modelBuilder.Entity<Guild>().HasOne(g => g.Admin) .WithOne().HasForeignKey<Guild>(g => g.AdminPlayerId).IsRequired(false);
             modelBuilder.Entity<Guild>().HasMany(g => g.Players).WithOne(p => p.Guild);//.IsRequired();
 
             modelBuilder.Entity<MultiGuild>().ToTable("MultiGuilds");
