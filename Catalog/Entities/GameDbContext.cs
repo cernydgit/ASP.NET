@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Entities
 {
@@ -16,6 +18,13 @@ namespace Catalog.Entities
         public DbSet<Player> Players { get; set; }
         public DbSet<MultiPlayer> MultiPlayers { get; set; }
         public DbSet<Tag> Tags { get; set; }
+
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.EnableDetailedErrors();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

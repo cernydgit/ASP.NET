@@ -23,12 +23,17 @@ namespace Catalog.Controllers
         [HttpGet("Guilds")]
         public async Task<ActionResult<IEnumerable<Guild>>> GetGuilds()
         {
-            var guild = new Guild();
-            guild.Players.Add(new Player());
-            gameDbContext.Guilds.Add(guild);
-            
-            await gameDbContext.SaveChangesAsync();
-            return await gameDbContext.Guilds.Include(g => g.Players).ToListAsync();
+
+            using (logger.BeginScope("**** Getting guilds *********"))
+            {
+                logger.LogInformation("GetGuilds");
+                var guild = new Guild();
+                guild.Players.Add(new Player());
+                gameDbContext.Guilds.Add(guild);
+
+                await gameDbContext.SaveChangesAsync();
+                return await gameDbContext.Guilds.Include(g => g.Players).ToListAsync();
+            }
         }
 
         [HttpGet("Players")]

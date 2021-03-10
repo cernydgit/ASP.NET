@@ -21,7 +21,7 @@ namespace Catalog
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.AddJsonConsole();
+                    logging.AddJsonConsole(o => o.IncludeScopes = true);
                     logging.AddDebug();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

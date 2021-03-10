@@ -26,16 +26,23 @@ namespace Catalog
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (Environment.IsDevelopment())
+            {
+                services.AddLogging(b => b.AddSeq());
+            }
+
             services.Configure<SecretSettings>(Configuration.GetSection(nameof(SecretSettings))); //dotnet user-secrets set "SecretSettings:ServiceApiKey" "12345"
             services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
 
@@ -75,7 +82,7 @@ namespace Catalog
             logger.LogInformation($" {nameof(MongoSettings)}: {JsonSerializer.Serialize(mongoSettings)}");
             logger.LogInformation($" {nameof(SecretSettings)}: {JsonSerializer.Serialize(secretSettings)}");
 
-            if (true /*env.IsDevelopment()*/)
+            if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();

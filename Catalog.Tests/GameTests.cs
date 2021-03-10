@@ -9,6 +9,7 @@ using Catalog.Entities;
 using NUnit.Framework;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Tests
 {
@@ -16,11 +17,13 @@ namespace Catalog.Tests
     {
         protected GameDbContext GameDbContext;
         protected WebApplicationFactory<Startup> AppFactory = new WebApplicationFactory<Startup>();
+        ILogger<GameTests> logger;
 
         [SetUp]
         public async Task SetUp()
         {
             GameDbContext = CreateDbContext();
+            logger = AppFactory.Services.GetService<ILoggerFactory>().CreateLogger<GameTests>();
             await InitDatabase(3);
         }
 
@@ -28,6 +31,15 @@ namespace Catalog.Tests
         {
             return AppFactory.Services.CreateScope().ServiceProvider.GetService<GameDbContext>();
         }
+
+        [Test]
+        public async Task Log()
+        {
+            logger.LogInformation("Simple message");
+            logger.LogInformation("Parametrized message {Param1}", 123);
+
+        }
+
 
         [Test]
         public async Task LoadNoTracking()
