@@ -76,18 +76,20 @@ namespace Catalog
             IOptions<SecretSettings> secretSettings,
             IOptions<MongoSettings> mongoSettings)
         {
-            loggerFactory.AddFile("Logs/Log.txt", outputTemplate: "{Timestamp:o} {RequestId,13} [{Level:u3}] {SourceContext} {Message} ({EventId:x8}){NewLine}{Exception}");
-
-            logger.LogInformation($"Starting ... {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}....");
-            logger.LogInformation($" {nameof(MongoSettings)}: {JsonSerializer.Serialize(mongoSettings)}");
-            logger.LogInformation($" {nameof(SecretSettings)}: {JsonSerializer.Serialize(secretSettings)}");
-
             if (Environment.IsDevelopment())
             {
+                //loggerFactory.AddFile("Logs/Log.txt", outputTemplate: "{Timestamp:o} {RequestId,13} [{Level:u3}] {SourceContext} {Message} ({EventId:x8}){NewLine}{Exception}");
+                loggerFactory.AddFile("Logs/Log.txt", outputTemplate: ">>>>> {Timestamp:yyyy-MM-ddTHH:mm:ss,fff} [{Level:u13}] {SourceContext} {Message} {RequestId,13} {NewLine}");
+
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog v1"));
             }
+
+            logger.LogInformation($"Starting {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}....");
+            logger.LogInformation($" {nameof(MongoSettings)}: {JsonSerializer.Serialize(mongoSettings)}");
+            logger.LogInformation($" {nameof(SecretSettings)}: {JsonSerializer.Serialize(secretSettings)}");
+
 
             app.UseRouting();
 

@@ -29,7 +29,14 @@ namespace Catalog.Tests
 
         private GameDbContext CreateDbContext()
         {
-            return AppFactory.Services.CreateScope().ServiceProvider.GetService<GameDbContext>();
+            var db = AppFactory.Services.CreateScope().ServiceProvider.GetService<GameDbContext>();
+            db.SaveChangesFailed += Db_SaveChangesFailed;
+            return db;
+        }
+
+        private void Db_SaveChangesFailed(object sender, SaveChangesFailedEventArgs e)
+        {
+            logger.LogError(e.Exception.ToString());
         }
 
         [Test]
