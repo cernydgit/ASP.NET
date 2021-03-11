@@ -104,4 +104,6 @@ namespace Catalog.Controllers
             return _context.Guilds.Any(e => e.GuildId == id);
         }
     }
+
+
 }
