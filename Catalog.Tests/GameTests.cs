@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Catalog.Tests
 {
+
     public class GameTests
     {
         protected GameDbContext GameDbContext;
@@ -39,13 +40,6 @@ namespace Catalog.Tests
             logger.LogError(e.Exception.ToString());
         }
 
-        [Test]
-        public async Task Log()
-        {
-            logger.LogInformation("Simple message");
-            logger.LogInformation("Parametrized message {Param1}", 123);
-
-        }
 
 
         [Test]

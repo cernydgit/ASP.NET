@@ -79,7 +79,7 @@ namespace Catalog
             if (Environment.IsDevelopment())
             {
                 //loggerFactory.AddFile("Logs/Log.txt", outputTemplate: "{Timestamp:o} {RequestId,13} [{Level:u3}] {SourceContext} {Message} ({EventId:x8}){NewLine}{Exception}");
-                loggerFactory.AddFile("Logs/Log.txt", outputTemplate: ">>>>> {Timestamp:yyyy-MM-ddTHH:mm:ss,fff} [{Level:u13}] {SourceContext} {Message} {RequestId,13} {NewLine}");
+                loggerFactory.AddFile("Logs/Log.txt", outputTemplate: ">>>>> {Timestamp:yyyy-MM-ddTHH:mm:ss,fff} [{Level:u13}] {SourceContext} {Message} {NewLine}TestScope:{TestScope} {RequestId,13} {NewLine}");
 
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
