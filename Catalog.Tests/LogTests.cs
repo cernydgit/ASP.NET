@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace Catalog.Tests
 {
+
     public class LogTests
     {
         protected WebApplicationFactory<Startup> AppFactory = new WebApplicationFactory<Startup>();

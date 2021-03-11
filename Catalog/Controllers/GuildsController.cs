@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Catalog.Entities;
+using Mapster;
 
 namespace Catalog.Controllers
 {
@@ -21,15 +22,15 @@ namespace Catalog.Controllers
         }
 
         // GET: api/Guilds
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Guild>>> GetGuilds()
+        [HttpGet("get")]
+        public async Task<ActionResult<IEnumerable<GuildSelectDTO>>> GetGuilds()
         {
-            return await _context.Guilds.ToListAsync();
+            return await _context.Guilds.ProjectToType<GuildSelectDTO>().ToListAsync();
         }
 
         // GET: api/Guilds/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Guild>> GetGuild(int id)
+        [HttpGet("get/{id}")]
+        public async Task<ActionResult<GuildSelectDTO>> GetGuild(int id)
         {
             var guild = await _context.Guilds.FindAsync(id);
 
@@ -38,53 +39,51 @@ namespace Catalog.Controllers
                 return NotFound();
             }
 
-            return guild;
+            return guild.Adapt<GuildSelectDTO>();
         }
 
         // PUT: api/Guilds/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGuild(int id, Guild guild)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateGuild(int id, GuildUpdateDTO guild)
         {
             if (id != guild.GuildId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(guild).State = EntityState.Modified;
+            var dbGuild = await _context.Guilds.FirstOrDefaultAsync(g => g.GuildId == guild.GuildId);
+
+            if (dbGuild == null)
+            {
+                return NotFound();
+            }
+
+            guild.Adapt(dbGuild);
+            _context.Entry(dbGuild).Property(nameof(dbGuild.Timestamp)).OriginalValue = dbGuild.Timestamp;
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                if (!GuildExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict(ex.ToString());
             }
-
+ 
             return NoContent();
         }
 
-        // POST: api/Guilds
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Guild>> PostGuild(Guild guild)
+        [HttpPost("insert")]
+        public async Task<ActionResult<GuildSelectDTO>> InsertGuild(GuildInsertDTO dto)
         {
+            var guild = dto.Adapt<Guild>();
             _context.Guilds.Add(guild);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGuild", new { id = guild.GuildId }, guild);
+            return CreatedAtAction(nameof(GetGuild), new { id = guild.GuildId }, guild.Adapt<GuildSelectDTO>());
         }
 
         // DELETE: api/Guilds/5
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteGuild(int id)
         {
             var guild = await _context.Guilds.FindAsync(id);
@@ -103,6 +102,23 @@ namespace Catalog.Controllers
         {
             return _context.Guilds.Any(e => e.GuildId == id);
         }
+    }
+
+
+    public class GuildInsertDTO : NamedEntity
+    {
+        public int? AdminPlayerId { get; set; }
+    }
+
+    public class GuildUpdateDTO : GuildInsertDTO
+    {
+        public int GuildId { get; set; }
+        public byte[] Timestamp { get; set; }
+    }
+
+    public class GuildSelectDTO : GuildUpdateDTO
+    {
+        public DateTime Created { get; set; }
     }
 
 

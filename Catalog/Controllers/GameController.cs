@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NSwag.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Catalog.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class GameController : ControllerBase
     {
         private readonly GameDbContext gameDbContext;
@@ -21,6 +21,8 @@ namespace Catalog.Controllers
         }
 
         [HttpGet("Guilds")]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<IEnumerable<Guild>>> GetGuilds()
         {
 

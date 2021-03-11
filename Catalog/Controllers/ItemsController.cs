@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NSwag.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace Catalog.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [OpenApiIgnore]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ItemsController : ControllerBase
     {
         private readonly IRepository repository;
@@ -29,6 +32,8 @@ namespace Catalog.Controllers
         }
 
         [HttpGet]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IEnumerable<Item> GetItems()
         {
             logger.LogInformation($"{nameof(GetItems)} started");
@@ -38,6 +43,8 @@ namespace Catalog.Controllers
         }
 
         [HttpGet("{index}")]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult<Item> GetItemByIndex(int index)
         {
             logger.LogInformation($"{nameof(GetItemByIndex)} id {index}");
@@ -46,6 +53,8 @@ namespace Catalog.Controllers
         }
 
         [HttpPost]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult<Item> CreateItem(Item item)
         {
             logger.LogInformation($"{nameof(CreateItem)}");
@@ -55,6 +64,8 @@ namespace Catalog.Controllers
         }
 
         [HttpPut]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult UpdateItem(Item item)
         {
             logger.LogInformation($"{nameof(UpdateItem)}");
@@ -63,6 +74,8 @@ namespace Catalog.Controllers
         }
 
         [HttpDelete("{id}")]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult DeleteItem(string id)
         {
             repository.DeleteItem(id);
@@ -70,6 +83,8 @@ namespace Catalog.Controllers
         }
 
         [HttpGet("throw")]
+        [OpenApiIgnore]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult Throw()
         {
             throw new InvalidOperationException("Test exception");
