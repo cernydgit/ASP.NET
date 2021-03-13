@@ -44,22 +44,30 @@ namespace Catalog.Controllers
 
         // PUT: api/Guilds/5
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateGuild(int id, GuildUpdateDTO guild)
+        //[ApiConventionMethod(typeof(DefaultApiConventions),nameof(DefaultApiConventions.Put))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status304NotModified)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateGuild(int id, GuildUpdateDTO guildDTO)
         {
-            if (id != guild.GuildId)
+            if (id != guildDTO.GuildId)
             {
                 return BadRequest();
             }
 
-            var dbGuild = await _context.Guilds.FirstOrDefaultAsync(g => g.GuildId == guild.GuildId);
+            var guild = await _context.Guilds.FirstOrDefaultAsync(g => g.GuildId == guildDTO.GuildId);
 
-            if (dbGuild == null)
+            if (guild == null)
             {
                 return NotFound();
             }
 
-            guild.Adapt(dbGuild);
-            _context.Entry(dbGuild).Property(nameof(dbGuild.Timestamp)).OriginalValue = dbGuild.Timestamp;
+            //not working for default values
+            //var guild = new Guild { GuildId = guildDTO.GuildId };
+            //_context.Attach(guild);
+            guildDTO.Adapt(guild);
+            _context.Entry(guild).Property(nameof(guild.Timestamp)).OriginalValue = guild.Timestamp;
 
             try
             {
