@@ -22,14 +22,14 @@ namespace Catalog.Controllers
         }
 
         // GET: api/Guilds
-        [HttpGet("get")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<GuildSelectDTO>>> GetGuilds()
         {
             return await _context.Guilds.ProjectToType<GuildSelectDTO>().ToListAsync();
         }
 
         // GET: api/Guilds/5
-        [HttpGet("get/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<GuildSelectDTO>> GetGuild(int id)
         {
             var guild = await _context.Guilds.FindAsync(id);
@@ -43,12 +43,13 @@ namespace Catalog.Controllers
         }
 
         // PUT: api/Guilds/5
-        [HttpPut("update/{id}")]
+        [HttpPut("{id}")]
         //[ApiConventionMethod(typeof(DefaultApiConventions),nameof(DefaultApiConventions.Put))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status304NotModified)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateGuild(int id, GuildUpdateDTO guildDTO)
         {
             if (id != guildDTO.GuildId)
@@ -81,7 +82,8 @@ namespace Catalog.Controllers
             return NoContent();
         }
 
-        [HttpPost("insert")]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<GuildSelectDTO>> InsertGuild(GuildInsertDTO dto)
         {
             var guild = dto.Adapt<Guild>();
@@ -91,16 +93,18 @@ namespace Catalog.Controllers
         }
 
         // DELETE: api/Guilds/5
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteGuild(int id)
         {
-            var guild = await _context.Guilds.FindAsync(id);
+            var guild = await _context.MultiGuilds.Where(g => g.GuildId == id).Include(g => g.Players).FirstOrDefaultAsync();
             if (guild == null)
             {
                 return NotFound();
             }
 
-            _context.Guilds.Remove(guild);
+            _context.MultiGuilds.Remove(guild);
             await _context.SaveChangesAsync();
 
             return NoContent();

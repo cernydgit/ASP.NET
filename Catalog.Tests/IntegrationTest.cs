@@ -19,7 +19,7 @@ namespace Catalog.Tests
         protected ILogger<IntegrationTest> Logger { get; private set; }
 
         [SetUp]
-        public async Task SetUp()
+        public virtual async Task SetUp()
         {
             DbContext = CreateDbContext();
             Logger = AppFactory.Services.GetService<ILogger<IntegrationTest>>();
