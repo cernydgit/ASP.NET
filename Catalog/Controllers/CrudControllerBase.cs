@@ -59,7 +59,7 @@ namespace Catalog.Controllers
             catch (DbUpdateConcurrencyException ex)
             {
                 //TODO: model state dictionary
-                return Conflict((ex.ToString());
+                return Conflict(ex.ToString());
             }
 
             return NoContent();
