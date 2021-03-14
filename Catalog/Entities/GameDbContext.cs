@@ -27,6 +27,7 @@ namespace Catalog.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Guild>().ToTable("Guilds");
+            //modelBuilder.Entity<Guild>().Property(b => b.Id).HasColumnName("GuildId");
             modelBuilder.Entity<Guild>().Property(b => b.Name).IsRequired();
             modelBuilder.Entity<Guild>().Property(b => b.Created).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Guild>().Property(b => b.Timestamp).IsRowVersion();

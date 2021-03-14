@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Catalog.Entities
 {
-    public class Guild : NamedEntity
+    public class Guild : NamedEntity, IEntityID, IEntityTimestamp
     {
         public int GuildId { get; set; }
         public DateTime Created { get; set; }
@@ -12,5 +12,7 @@ namespace Catalog.Entities
         public Player Admin { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public byte[] Timestamp { get; set; }
+
+        int IEntityID.Id => GuildId;
     }
 }

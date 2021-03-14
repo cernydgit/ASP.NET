@@ -1,48 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Catalog.Entities;
-using Mapster;
+using Catalog.DTOs;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Catalog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GuildsController : ControllerBase
+    public class GuildsController : CrudControllerBase<GameDbContext>
     {
-        private readonly GameDbContext _context;
+        public GuildsController(GameDbContext context) : base(context) { }
 
-        public GuildsController(GameDbContext context)
-        {
-            _context = context;
-        }
-
-        // GET: api/Guilds
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GuildSelectDTO>>> GetGuilds()
-        {
-            return await _context.Guilds.ProjectToType<GuildSelectDTO>().ToListAsync();
-        }
+        public Task<ActionResult<IEnumerable<GuildSelectDto>>> GetGuilds() => Get<Guild, GuildSelectDto>();
 
-        // GET: api/Guilds/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GuildSelectDTO>> GetGuild(int id)
-        {
-            var guild = await _context.Guilds.FindAsync(id);
+        public Task<ActionResult<GuildSelectDto>> GetGuild(int id) => Get<Guild, GuildSelectDto>(id);
 
-            if (guild == null)
-            {
-                return NotFound();
-            }
-
-            return guild.Adapt<GuildSelectDTO>();
-        }
-
-        // PUT: api/Guilds/5
         [HttpPut("{id}")]
         //[ApiConventionMethod(typeof(DefaultApiConventions),nameof(DefaultApiConventions.Put))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -50,88 +29,15 @@ namespace Catalog.Controllers
         [ProducesResponseType(StatusCodes.Status304NotModified)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateGuild(int id, GuildUpdateDTO guildDTO)
-        {
-            if (id != guildDTO.GuildId)
-            {
-                return BadRequest();
-            }
-
-            var guild = await _context.Guilds.FirstOrDefaultAsync(g => g.GuildId == guildDTO.GuildId);
-
-            if (guild == null)
-            {
-                return NotFound();
-            }
-
-            //not working for default values
-            //var guild = new Guild { GuildId = guildDTO.GuildId };
-            //_context.Attach(guild);
-            guildDTO.Adapt(guild);
-            _context.Entry(guild).Property(nameof(guild.Timestamp)).OriginalValue = guild.Timestamp;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return Conflict(ex.ToString());
-            }
- 
-            return NoContent();
-        }
+        public Task<IActionResult> UpdateGuild(int id, GuildUpdateDto guildDTO) => Update<Guild, GuildUpdateDto>(id, guildDTO);
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<GuildSelectDTO>> InsertGuild(GuildInsertDTO dto)
-        {
-            var guild = dto.Adapt<Guild>();
-            _context.Guilds.Add(guild);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetGuild), new { id = guild.GuildId }, guild.Adapt<GuildSelectDTO>());
-        }
+        public Task<ActionResult<GuildSelectDto>> InsertGuild(GuildInsertDto dto) => Insert<Guild, GuildInsertDto, GuildSelectDto>(dto, nameof(GetGuild));
 
-        // DELETE: api/Guilds/5
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteGuild(int id)
-        {
-            var guild = await _context.MultiGuilds.Where(g => g.GuildId == id).Include(g => g.Players).FirstOrDefaultAsync();
-            if (guild == null)
-            {
-                return NotFound();
-            }
-
-            _context.MultiGuilds.Remove(guild);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool GuildExists(int id)
-        {
-            return _context.Guilds.Any(e => e.GuildId == id);
-        }
+        public Task<IActionResult> DeleteGuild(int id) => DeleteOne(_context.Guilds.Where(g => g.GuildId == id).Include(g => g.Players));
     }
-
-
-    public class GuildInsertDTO : NamedEntity
-    {
-        public int? AdminPlayerId { get; set; }
-    }
-
-    public class GuildUpdateDTO : GuildInsertDTO
-    {
-        public int GuildId { get; set; }
-        public byte[] Timestamp { get; set; }
-    }
-
-    public class GuildSelectDTO : GuildUpdateDTO
-    {
-        public DateTime Created { get; set; }
-    }
-
-
 }
