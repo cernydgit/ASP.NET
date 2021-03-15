@@ -21,6 +21,9 @@ using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using Catalog.Entities;
 using Microsoft.EntityFrameworkCore;
+using Mapster;
+using MapsterMapper;
+using Hellang.Middleware.ProblemDetails;
 
 namespace Catalog
 {
@@ -43,21 +46,38 @@ namespace Catalog
                 services.AddLogging(b => b.AddSeq());
             }
 
-            services.Configure<SecretSettings>(Configuration.GetSection(nameof(SecretSettings))); //dotnet user-secrets set "SecretSettings:ServiceApiKey" "12345"
-            services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
+            services.AddProblemDetails();
 
-            BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.BsonType.String));
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(MongoDB.Bson.BsonType.String));
-
-            services.AddSingleton(CreateMongoClient);
-
-            services.AddSingleton<IRepository, MongoRepository>();
-            //services.AddSingleton<IRepository, InMemRepository>();
+            ConfigureSecretSettings(services);
+            ConfigureMongoDB(services);
+            ConfigureMapster(services);
 
             services.AddControllers();
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog", Version = "v1" }));
 
+
+
             services.AddDbContext<GameDbContext>(options => options.UseSqlServer("name=SqlServerSettings:ConnectionString"));
+        }
+
+        private void ConfigureSecretSettings(IServiceCollection services)
+        {
+            services.Configure<SecretSettings>(Configuration.GetSection(nameof(SecretSettings))); //dotnet user-secrets set "SecretSettings:ServiceApiKey" "12345"
+        }
+
+        private static void ConfigureMapster(IServiceCollection services)
+        {
+            services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+            services.AddScoped<IMapper, ServiceMapper>();
+        }
+
+        private void ConfigureMongoDB(IServiceCollection services)
+        {
+            services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
+            BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.BsonType.String));
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(MongoDB.Bson.BsonType.String));
+            services.AddSingleton(CreateMongoClient);
+            services.AddSingleton<IRepository, MongoRepository>();
         }
 
         private IMongoClient CreateMongoClient(IServiceProvider serviceProvider)
@@ -90,7 +110,7 @@ namespace Catalog
             logger.LogInformation($" {nameof(MongoSettings)}: {JsonSerializer.Serialize(mongoSettings)}");
             logger.LogInformation($" {nameof(SecretSettings)}: {JsonSerializer.Serialize(secretSettings)}");
 
-
+            app.UseProblemDetails();
             app.UseRouting();
 
             app.UseAuthorization();

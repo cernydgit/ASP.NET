@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 using Catalog.Entities;
 using Catalog.DTOs;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
+
+using MapsterMapper;
 
 namespace Catalog.Controllers
 {
@@ -15,7 +18,7 @@ namespace Catalog.Controllers
     [ApiController]
     public class GuildsController : CrudControllerBase<GameDbContext>
     {
-        public GuildsController(GameDbContext context, ILogger<GuildsController> logger) : base(context, logger) { }
+        public GuildsController(GameDbContext context, IMapper mapper, ILogger<GuildsController> logger) : base(context, mapper, logger) { }
 
         [HttpGet]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]

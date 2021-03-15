@@ -6,6 +6,7 @@ using Catalog.Entities;
 using Mapster;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using MapsterMapper;
 
 namespace Catalog.Controllers
 {
@@ -13,23 +14,25 @@ namespace Catalog.Controllers
     {
         protected TContext Context { get; }
         protected ILogger Logger { get; }
+        protected IMapper Mapper { get; }
 
-        public CrudControllerBase(TContext context, ILogger logger)
+        public CrudControllerBase(TContext context, IMapper mapper, ILogger logger)
         {
             Context = context;
             Logger = logger;
+            Mapper = mapper;
         }
 
         protected virtual async Task<ActionResult<IEnumerable<TDto>>> Get<TEntity, TDto>() where TEntity : class
         {
-            return await Context.Set<TEntity>().ProjectToType<TDto>().ToListAsync();
+            return await Context.Set<TEntity>().ProjectToType<TDto>(Mapper.Config).ToListAsync();
         }
 
         protected virtual async Task<ActionResult<TDto>> Get<TEntity, TDto>(int id) where TEntity : class
         {
             var entity = await Context.Set<TEntity>().FindAsync(id);
 
-            return entity == null ? NotFound() : entity.Adapt<TDto>();
+            return entity == null ? NotFound() : Mapper.Map<TDto>(entity);
         }
 
         protected virtual async Task<IActionResult> Update<TEntity, TDto>(int id, TDto dto)
@@ -48,7 +51,7 @@ namespace Catalog.Controllers
                 return NotFound();
             }
 
-            dto.Adapt(entity);
+            Mapper.Map(dto, entity);
 
             if (entity is IEntityTimestamp timestamp)
             {
@@ -71,10 +74,10 @@ namespace Catalog.Controllers
 
         protected virtual async Task<ActionResult<TReturnDto>> Insert<TEntity, TInsertDto, TReturnDto>(TInsertDto dto, string getMethod) where TEntity : class, IEntityID
         {
-            var entity = dto.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(dto);
             Context.Set<TEntity>().Add(entity);
             await Context.SaveChangesAsync();
-            return CreatedAtAction(getMethod, new { id = entity.Id }, entity.Adapt<TReturnDto>());
+            return CreatedAtAction(getMethod, new { id = entity.Id }, Mapper.Map<TReturnDto>(entity));
         }
 
         protected virtual async Task<IActionResult> DeleteOne<TEntity>(IQueryable<TEntity> deleteQuery) where TEntity : class
