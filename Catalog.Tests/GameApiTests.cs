@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Catalog.Tests.Client;
 using System.Linq;
 using System.Net;
+using System;
 
 namespace Catalog.Tests
 {
@@ -47,6 +48,20 @@ namespace Catalog.Tests
             guild = await Client.GuildsGetAsync(1);
             Assert.AreEqual(updateDTO.Name, guild.Name);
         }
+
+        [Test]
+        public async Task UpdateConcurrency()
+        {
+            var guild1 = await Client.GuildsGetAsync(1);
+            var guild2 = await Client.GuildsGetAsync(1);
+            var updateDTO1 = new GuildUpdateDTO { GuildId = 1, Name = "NewName", Timestamp = guild1.Timestamp };
+            var updateDTO2 = new GuildUpdateDTO { GuildId = 1, Name = "SecondName", Timestamp = guild2.Timestamp };
+            await Client.GuildsPutAsync(1, updateDTO1);
+            var ex = Assert.ThrowsAsync<ApiException<ProblemDetails>>(async () => await Client.GuildsPutAsync(1, updateDTO2));
+            Assert.AreEqual(HttpStatusCode.Conflict, (HttpStatusCode) ex.StatusCode);
+        }
+
+
 
 
         [Test]

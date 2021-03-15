@@ -5,26 +5,29 @@ using Microsoft.EntityFrameworkCore;
 using Catalog.Entities;
 using Mapster;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Controllers
 {
     public class CrudControllerBase<TContext> : ControllerBase where TContext : DbContext
     {
-        protected TContext _context;
+        protected TContext Context { get; }
+        protected ILogger Logger { get; }
 
-        public CrudControllerBase(TContext context)
+        public CrudControllerBase(TContext context, ILogger logger)
         {
-            _context = context;
+            Context = context;
+            Logger = logger;
         }
 
         protected virtual async Task<ActionResult<IEnumerable<TDto>>> Get<TEntity, TDto>() where TEntity : class
         {
-            return await _context.Set<TEntity>().ProjectToType<TDto>().ToListAsync();
+            return await Context.Set<TEntity>().ProjectToType<TDto>().ToListAsync();
         }
 
         protected virtual async Task<ActionResult<TDto>> Get<TEntity, TDto>(int id) where TEntity : class
         {
-            var entity = await _context.Set<TEntity>().FindAsync(id);
+            var entity = await Context.Set<TEntity>().FindAsync(id);
 
             return entity == null ? NotFound() : entity.Adapt<TDto>();
         }
@@ -38,7 +41,7 @@ namespace Catalog.Controllers
                 return BadRequest();
             }
 
-            var entity = await _context.Set<TEntity>().FindAsync(id);
+            var entity = await Context.Set<TEntity>().FindAsync(id);
 
             if (entity == null)
             {
@@ -49,17 +52,17 @@ namespace Catalog.Controllers
 
             if (entity is IEntityTimestamp timestamp)
             {
-                _context.Entry(entity).Property(nameof(timestamp.Timestamp)).OriginalValue = timestamp.Timestamp;
+                Context.Entry(entity).Property(nameof(timestamp.Timestamp)).OriginalValue = timestamp.Timestamp;
             }
 
             try
             {
-                await _context.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                //TODO: model state dictionary
-                return Conflict(ex.ToString());
+                Logger.LogWarning($"DbUpdateConcurrencyException: {entity}, id:{id}, Exception:\n{ex}");
+                return Conflict(); //TODO: model state dictionary
             }
 
             return NoContent();
@@ -69,8 +72,8 @@ namespace Catalog.Controllers
         protected virtual async Task<ActionResult<TReturnDto>> Insert<TEntity, TInsertDto, TReturnDto>(TInsertDto dto, string getMethod) where TEntity : class, IEntityID
         {
             var entity = dto.Adapt<TEntity>();
-            _context.Set<TEntity>().Add(entity);
-            await _context.SaveChangesAsync();
+            Context.Set<TEntity>().Add(entity);
+            await Context.SaveChangesAsync();
             return CreatedAtAction(getMethod, new { id = entity.Id }, entity.Adapt<TReturnDto>());
         }
 
@@ -82,8 +85,8 @@ namespace Catalog.Controllers
                 return NotFound();
             }
 
-            _context.Set<TEntity>().Remove(entity);
-            await _context.SaveChangesAsync();
+            Context.Set<TEntity>().Remove(entity);
+            await Context.SaveChangesAsync();
             return NoContent();
         }
     }

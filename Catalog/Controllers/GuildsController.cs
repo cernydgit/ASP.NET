@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Catalog.Entities;
 using Catalog.DTOs;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Controllers
 {
@@ -14,7 +15,7 @@ namespace Catalog.Controllers
     [ApiController]
     public class GuildsController : CrudControllerBase<GameDbContext>
     {
-        public GuildsController(GameDbContext context) : base(context) { }
+        public GuildsController(GameDbContext context, ILogger<GuildsController> logger) : base(context, logger) { }
 
         [HttpGet]
         public Task<ActionResult<IEnumerable<GuildSelectDto>>> GetGuilds() => Get<Guild, GuildSelectDto>();
@@ -38,6 +39,6 @@ namespace Catalog.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public Task<IActionResult> DeleteGuild(int id) => DeleteOne(_context.Guilds.Where(g => g.GuildId == id).Include(g => g.Players));
+        public Task<IActionResult> DeleteGuild(int id) => DeleteOne(Context.Guilds.Where(g => g.GuildId == id).Include(g => g.Players));
     }
 }
