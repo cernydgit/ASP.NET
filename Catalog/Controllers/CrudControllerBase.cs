@@ -7,6 +7,7 @@ using Mapster;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using MapsterMapper;
+using System.ComponentModel.DataAnnotations;
 
 namespace Catalog.Controllers
 {
@@ -26,6 +27,11 @@ namespace Catalog.Controllers
         protected virtual async Task<ActionResult<IEnumerable<TDto>>> Get<TEntity, TDto>() where TEntity : class
         {
             return await Context.Set<TEntity>().ProjectToType<TDto>(Mapper.Config).ToListAsync();
+        }
+
+        protected virtual async Task<ActionResult<IEnumerable<TDto>>> GetPage<TEntity, TDto>(int skip, int take) where TEntity : class
+        {
+            return await Context.Set<TEntity>().Skip(skip).Take(take).ProjectToType<TDto>(Mapper.Config).ToListAsync();
         }
 
         protected virtual async Task<ActionResult<TDto>> Get<TEntity, TDto>(int id) where TEntity : class

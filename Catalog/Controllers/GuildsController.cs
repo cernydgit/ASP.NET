@@ -11,6 +11,7 @@ using Catalog.Entities;
 using Catalog.DTOs;
 
 using MapsterMapper;
+using System.ComponentModel.DataAnnotations;
 
 namespace Catalog.Controllers
 {
@@ -23,6 +24,15 @@ namespace Catalog.Controllers
         [HttpGet]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         public Task<ActionResult<IEnumerable<GuildSelectDto>>> GetGuilds() => Get<Guild, GuildSelectDto>();
+
+        [HttpGet("page")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
+        public Task<ActionResult<IEnumerable<GuildSelectDto>>> GetGuildsPage(
+            [FromQuery(Name = "skip")][Range(0, int.MaxValue)] int skip,
+            [FromQuery(Name = "take")][Range(1, 200)] int take)
+        {
+            return GetPage<Guild, GuildSelectDto>(skip, take);
+        }
 
         [HttpGet("{id}")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]

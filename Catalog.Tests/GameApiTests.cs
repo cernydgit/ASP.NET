@@ -27,6 +27,14 @@ namespace Catalog.Tests
         }
 
         [Test]
+        public async Task GetPage()
+        {
+            var guilds = await Client.PageAsync(1, 1);
+            Assert.AreEqual(1, guilds.Count);
+            Assert.AreEqual(2, guilds.First().GuildId);
+        }
+
+        [Test]
         public async Task GetOne()
         {
             Assert.IsNotNull(await Client.GuildsGetAsync(1));
