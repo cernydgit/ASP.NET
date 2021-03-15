@@ -18,27 +18,31 @@ namespace Catalog.Controllers
         public GuildsController(GameDbContext context, ILogger<GuildsController> logger) : base(context, logger) { }
 
         [HttpGet]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         public Task<ActionResult<IEnumerable<GuildSelectDto>>> GetGuilds() => Get<Guild, GuildSelectDto>();
 
         [HttpGet("{id}")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         public Task<ActionResult<GuildSelectDto>> GetGuild(int id) => Get<Guild, GuildSelectDto>(id);
 
         [HttpPut("{id}")]
-        //[ApiConventionMethod(typeof(DefaultApiConventions),nameof(DefaultApiConventions.Put))]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status304NotModified)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ApiConventionMethod(typeof(DefaultApiConventions),nameof(DefaultApiConventions.Put))]
+        //[ProducesResponseType(StatusCodes.Status409Conflict)]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status304NotModified)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status204NoContent)]
         public Task<IActionResult> UpdateGuild(int id, GuildUpdateDto guildDTO) => Update<Guild, GuildUpdateDto>(id, guildDTO);
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
+        //[ProducesResponseType(StatusCodes.Status201Created)]
         public Task<ActionResult<GuildSelectDto>> InsertGuild(GuildInsertDto dto) => Insert<Guild, GuildInsertDto, GuildSelectDto>(dto, nameof(GetGuild));
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
         public Task<IActionResult> DeleteGuild(int id) => DeleteOne(Context.Guilds.Where(g => g.GuildId == id).Include(g => g.Players));
     }
 }

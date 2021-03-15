@@ -35,7 +35,7 @@ namespace Catalog.Tests
         [Test]
         public async Task Insert()
         {
-            var newGuild = await Client.GuildsPostAsync(new GuildInsertDTO { Name = "NewGuild" });
+            var newGuild = await Client.GuildsPostAsync(new GuildInsertDto { Name = "NewGuild" });
             Assert.IsNotNull(await Client.GuildsGetAsync(newGuild.GuildId));
         }
 
@@ -43,7 +43,7 @@ namespace Catalog.Tests
         public async Task Update()
         {
             var guild = await Client.GuildsGetAsync(1);
-            var updateDTO = new GuildUpdateDTO { GuildId = 1, Name = "NewName", Timestamp = guild.Timestamp };
+            var updateDTO = new GuildUpdateDto { GuildId = 1, Name = "NewName", Timestamp = guild.Timestamp };
             await Client.GuildsPutAsync(1,updateDTO);
             guild = await Client.GuildsGetAsync(1);
             Assert.AreEqual(updateDTO.Name, guild.Name);
@@ -54,22 +54,19 @@ namespace Catalog.Tests
         {
             var guild1 = await Client.GuildsGetAsync(1);
             var guild2 = await Client.GuildsGetAsync(1);
-            var updateDTO1 = new GuildUpdateDTO { GuildId = 1, Name = "NewName", Timestamp = guild1.Timestamp };
-            var updateDTO2 = new GuildUpdateDTO { GuildId = 1, Name = "SecondName", Timestamp = guild2.Timestamp };
+            var updateDTO1 = new GuildUpdateDto { GuildId = 1, Name = "NewName", Timestamp = guild1.Timestamp };
+            var updateDTO2 = new GuildUpdateDto { GuildId = 1, Name = "SecondName", Timestamp = guild2.Timestamp };
             await Client.GuildsPutAsync(1, updateDTO1);
             var ex = Assert.ThrowsAsync<ApiException<ProblemDetails>>(async () => await Client.GuildsPutAsync(1, updateDTO2));
             Assert.AreEqual(HttpStatusCode.Conflict, (HttpStatusCode) ex.StatusCode);
         }
-
-
-
 
         [Test]
         public async Task Delete()
         {
             var guilds = await Client.GuildsGetAsync();
             await Client.GuildsDeleteAsync(guilds.First().GuildId);
-            var ex = Assert.ThrowsAsync<ApiException>(async () => await Client.GuildsGetAsync(guilds.First().GuildId));
+            var ex = Assert.ThrowsAsync<ApiException<ProblemDetails>>(async () => await Client.GuildsGetAsync(guilds.First().GuildId));
             Assert.AreEqual(HttpStatusCode.NotFound, (HttpStatusCode)ex.StatusCode);
         }
     }
