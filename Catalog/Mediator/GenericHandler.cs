@@ -1,11 +1,20 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Catalog.Mediator
 {
-    public class DummyBoolRequest<T> : IRequest<bool> { public T Input { get; set; }}
-    public class DummyStringRequest : IRequest<string> { }
+
+    public class DummyRequest<TInput, TResponse> : IRequest<TResponse>
+    {
+        public TInput Input { get; set; }
+        public override string ToString()
+        {
+            return Input.ToString();
+        }
+
+    }
 
     public class GenericHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
@@ -15,12 +24,21 @@ namespace Catalog.Mediator
         }
     }
 
-    public class Handlers
+    public class Handlers<TEntity>
     {
-        public class DummyBoolHandler : GenericHandler<DummyBoolRequest<string>, bool> { }
+        public class ToIntHandler : GenericHandler<DummyRequest<TEntity,int>, int> { }
+        public class ToStringHandler : GenericHandler<DummyRequest<TEntity, string>, string> { }
 
-        public class DummyStringHandler : GenericHandler<DummyStringRequest, string> { }
+        public static void Register(IServiceCollection services)
+        {
+            services.AddSingleton<IRequestHandler<DummyRequest<TEntity, int>, int>, ToIntHandler>();
+            services.AddSingleton<IRequestHandler<DummyRequest<TEntity, string>, string>, ToStringHandler>();
+        }
     }
+
+    
+
+
 }
 
 

@@ -21,6 +21,7 @@ namespace Catalog.Tests
         [SetUp]
         public virtual async Task SetUp()
         {
+            
             DbContext = CreateDbContext();
             Logger = AppFactory.Services.GetService<ILogger<IntegrationTest>>();
             RecreateDatabase();

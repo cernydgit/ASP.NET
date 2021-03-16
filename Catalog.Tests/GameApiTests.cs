@@ -9,7 +9,6 @@ namespace Catalog.Tests
 {
 
 
-
     public class GameApiTests : GameTestBase
     {
         protected GuildsClient Client { get; private set; }
