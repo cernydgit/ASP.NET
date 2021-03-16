@@ -20,8 +20,9 @@ namespace Catalog.Mediator
 
         public Task<bool> Handle(Tweet request, CancellationToken cancellationToken)
         {
-            Logger.LogInformation(request.Message);
+            Logger.LogInformation("Tweet: " + request.Message);
             return Task.FromResult(true);
         }
     }
+
 }

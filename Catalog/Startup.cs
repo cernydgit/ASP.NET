@@ -10,7 +10,6 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MongoDB.Driver;
@@ -46,6 +45,7 @@ namespace Catalog
             {
                 services.AddLogging(b => b.AddSeq());
             }
+
 
             services.AddProblemDetails();
 
@@ -89,10 +89,10 @@ namespace Catalog
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
-            IApplicationBuilder app, 
-            IWebHostEnvironment env, 
-            ILoggerFactory loggerFactory, 
-            ILogger<Startup> logger, 
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
+            ILoggerFactory loggerFactory,
+            ILogger<Startup> logger,
             IOptions<SecretSettings> secretSettings,
             IOptions<MongoSettings> mongoSettings)
         {
@@ -111,6 +111,7 @@ namespace Catalog
             logger.LogInformation($" {nameof(SecretSettings)}: {JsonSerializer.Serialize(secretSettings)}");
 
             app.UseProblemDetails();
+            app.UseMiddleware<ExceptionLoggerMiddleware>();
             app.UseRouting();
 
             app.UseAuthorization();
@@ -119,6 +120,8 @@ namespace Catalog
             {
                 endpoints.MapControllers();
             });
+
+            //app.UseExceptionHandler();
         }
     }
 }

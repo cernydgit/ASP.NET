@@ -10,6 +10,7 @@ using MapsterMapper;
 using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Catalog.Mediator;
+using System;
 
 namespace Catalog.Controllers
 {
@@ -30,6 +31,7 @@ namespace Catalog.Controllers
 
         protected virtual async Task<ActionResult<IEnumerable<TDto>>> Get<TEntity, TDto>() where TEntity : class
         {
+            await Mediator.Publish(new Notification { Messagee = "GetNotification" });
             var ret = await Mediator.Send(new Tweet { Message = "GetTweet" });
             return await Context.Set<TEntity>().ProjectToType<TDto>(Mapper.Config).ToListAsync();
         }
@@ -41,7 +43,10 @@ namespace Catalog.Controllers
 
         protected virtual async Task<ActionResult<TDto>> Get<TEntity, TDto>(int id) where TEntity : class
         {
-            var entity = await Context.Set<TEntity>().FindAsync(id);
+            //await Mediator.Publish(new Notify<string> { Value = "hi1." });
+            //await Mediator.Publish(new Notification { Messagee = "hi2." });
+            //var entity = await Context.Set<TEntity>().FindAsync(id);
+            var entity = await Mediator.Send(new GetRequest<TEntity> { Id = id });
 
             return entity == null ? NotFound() : Mapper.Map<TDto>(entity);
         }
