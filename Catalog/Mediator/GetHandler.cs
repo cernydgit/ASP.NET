@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Catalog.Mediator
 {
+
     public class GetHandler<TContext, TEntity> : IRequestHandler<GetRequest<TEntity>, TEntity>
         where TContext : DbContext
         where TEntity : class

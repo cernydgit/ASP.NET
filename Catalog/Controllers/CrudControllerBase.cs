@@ -46,6 +46,8 @@ namespace Catalog.Controllers
             //await Mediator.Publish(new Notify<string> { Value = "hi1." });
             //await Mediator.Publish(new Notification { Messagee = "hi2." });
             //var entity = await Context.Set<TEntity>().FindAsync(id);
+            var b = await Mediator.Send(new DummyBoolRequest<string> { Input = "input1" });
+            var s = await Mediator.Send(new DummyStringRequest());
             var entity = await Mediator.Send(new GetRequest<TEntity> { Id = id });
 
             return entity == null ? NotFound() : Mapper.Map<TDto>(entity);
