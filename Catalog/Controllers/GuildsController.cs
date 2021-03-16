@@ -12,6 +12,7 @@ using Catalog.DTOs;
 
 using MapsterMapper;
 using System.ComponentModel.DataAnnotations;
+using MediatR;
 
 namespace Catalog.Controllers
 {
@@ -19,7 +20,11 @@ namespace Catalog.Controllers
     [ApiController]
     public class GuildsController : CrudControllerBase<GameDbContext>
     {
-        public GuildsController(GameDbContext context, IMapper mapper, ILogger<GuildsController> logger) : base(context, mapper, logger) { }
+        public GuildsController(GameDbContext context, IMapper mapper, IMediator mediator, ILogger<GuildsController> logger) : base(context, mapper, mediator, logger)
+        {
+         
+        }
+
 
         [HttpGet]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]

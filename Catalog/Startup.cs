@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore;
 using Mapster;
 using MapsterMapper;
 using Hellang.Middleware.ProblemDetails;
+using MediatR;
 
 namespace Catalog
 {
@@ -55,9 +56,8 @@ namespace Catalog
             services.AddControllers();
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog", Version = "v1" }));
 
-
-
             services.AddDbContext<GameDbContext>(options => options.UseSqlServer("name=SqlServerSettings:ConnectionString"));
+            services.AddMediatR(typeof(Startup));
         }
 
         private void ConfigureSecretSettings(IServiceCollection services)

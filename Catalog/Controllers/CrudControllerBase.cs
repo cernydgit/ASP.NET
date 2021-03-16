@@ -8,6 +8,8 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using MapsterMapper;
 using System.ComponentModel.DataAnnotations;
+using MediatR;
+using Catalog.Mediator;
 
 namespace Catalog.Controllers
 {
@@ -16,16 +18,19 @@ namespace Catalog.Controllers
         protected TContext Context { get; }
         protected ILogger Logger { get; }
         protected IMapper Mapper { get; }
+        protected IMediator Mediator { get; }
 
-        public CrudControllerBase(TContext context, IMapper mapper, ILogger logger)
+        public CrudControllerBase(TContext context, IMapper mapper, IMediator mediator, ILogger logger)
         {
             Context = context;
             Logger = logger;
             Mapper = mapper;
+            Mediator = mediator;
         }
 
         protected virtual async Task<ActionResult<IEnumerable<TDto>>> Get<TEntity, TDto>() where TEntity : class
         {
+            var ret = await Mediator.Send(new Tweet { Message = "GetTweet" });
             return await Context.Set<TEntity>().ProjectToType<TDto>(Mapper.Config).ToListAsync();
         }
 

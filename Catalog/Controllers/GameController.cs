@@ -26,7 +26,7 @@ namespace Catalog.Controllers
         public async Task<ActionResult<IEnumerable<Guild>>> GetGuilds()
         {
 
-            using (logger.BeginScope("**** Getting guilds *********"))
+            using (logger.BeginScope("******* Getting guilds *********"))
             {
                 logger.LogInformation("GetGuilds");
                 var guild = new Guild();
