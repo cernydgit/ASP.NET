@@ -43,6 +43,14 @@ namespace Catalog.Tests
         }
 
         [Test]
+        public async Task GetOneAuthorized()
+        {
+            Assert.IsNotNull(await Client.AuthAsync(1));
+        }
+
+
+
+        [Test]
         public async Task Insert()
         {
             var newGuild = await Client.GuildsPostAsync(new GuildInsertDto { Name = "NewGuild" });

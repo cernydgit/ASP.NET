@@ -13,6 +13,7 @@ using Catalog.DTOs;
 using MapsterMapper;
 using System.ComponentModel.DataAnnotations;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Catalog.Controllers
 {
@@ -42,6 +43,11 @@ namespace Catalog.Controllers
         [HttpGet("{id}")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         public Task<ActionResult<GuildSelectDto>> GetGuild(int id) => Get<Guild, GuildSelectDto>(id);
+
+
+        [HttpGet("auth/{id}")]
+        [Authorize]
+        public Task<ActionResult<GuildSelectDto>> GetAuthorizedGuild(int id) => Get<Guild, GuildSelectDto>(id);
 
         [HttpPut("{id}")]
         [ApiConventionMethod(typeof(DefaultApiConventions),nameof(DefaultApiConventions.Put))]

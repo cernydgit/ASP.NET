@@ -25,6 +25,8 @@ using MapsterMapper;
 using Hellang.Middleware.ProblemDetails;
 using MediatR;
 using Catalog.Mediator;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Catalog
 {
@@ -49,6 +51,9 @@ namespace Catalog
 
 
             services.AddProblemDetails();
+
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+            services.AddAuthentication(nameof(CustomAuthHandler)).AddScheme<AuthenticationSchemeOptions, CustomAuthHandler>(nameof(CustomAuthHandler), o => { });
 
             ConfigureSecretSettings(services);
             ConfigureMongoDB(services);
@@ -118,6 +123,7 @@ namespace Catalog
             app.UseMiddleware<ExceptionLoggerMiddleware>();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
